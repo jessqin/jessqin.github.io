@@ -25,9 +25,9 @@ Generosity: The residual of regressing national average of reponse to "Have you 
 
 Corruption: Average of Binary response (1 = yes or 0 = no) to the question "Is corruption widespread throughout the government or not" and "Is corruption widespread within businesses or not?"
 
-Positive Affect: Average binary answers to "Did you experience a lot of happiness today?" and "DId you smile or laugh a lot yesterday?"
+Positive Affect: Average of binary answers to "Did you experience a lot of happiness today?" and "DId you smile or laugh a lot yesterday?"
 
-Negative Affect: Average binary answers to "Did you experience a lot of sadness today?" and "Did you experience a lot of these feelings yesterday?"
+Negative Affect: Average of binary answers to "Did you experience a lot of sadness today?" and "Did you experience a lot of these feelings yesterday?"
 
 
 ```{r}
@@ -100,7 +100,18 @@ country_df
 
 #Looking for Trends
 
-Here I plot Positive Affect vs Years to see if there is a trend in happiness 
+Looking at the evolution of happiness for al countries in the dataset:
+
+```{r}
+country_df %>%
+  ggplot(mapping = aes(x = Year, y = positive_affect, group_by(Year))) + 
+  geom_smooth(size = 1, se = FALSE) +
+  ylim(0.68,0.78)
+```
+
+Overall, there is no general trend for global happiness and year, this is probably because while some countries are increasing in happiness rating, others are decrease.
+
+Here I plot Positive Affect vs Years to see if there is a trend in the evolution of happiness for the top 10 most powerful countries:
 
 ```{r}
 country_df %>%
@@ -143,7 +154,8 @@ Top 10 powerful countries:
 ```{r}
 country_df %>%
   ggplot(mapping = aes(x = life_exp, y = positive_affect)) + 
-  geom_smooth(size = 1, se = FALSE)
+  geom_smooth(size = 1, se = FALSE) +
+  ggtitle("Happiness vs Life Expectancy for the top 10 most powerful countries")
 ```
 
 All of the countries:
@@ -151,21 +163,22 @@ All of the countries:
 ```{r}
 select_df %>%
   ggplot(mapping = aes(x = life_exp, y = positive_affect)) + 
-  geom_smooth(size = 1, se = FALSE)
+  geom_smooth(size = 1, se = FALSE) +
+  ggtitle("Happiness vs Life Expectancy")
 ```
 
 I anticipated that the higher the life expectancy, the higher the level of happiness. but the happiness rating peaks at the life expectancy of 70 and declines after that which I found interesting. 
 
 
-
+The relationship between Happiness and Lfife Expectancy is the same for the top 10 most powerful countries and that of the rest of the world
 
 #Positive Affect vs Generosity
-
 
 ```{r}
 select_df%>%
   ggplot(mapping = aes(x = Generosity, y = positive_affect)) + 
-  geom_smooth(size = 1, se = FALSE)
+  geom_smooth(size = 1, se = FALSE) +
+  ggtitle("Happiness vs Generosity")
 ```
 
 As expected, the trend for this is the higher the generosity, higher the happiness.
@@ -176,19 +189,23 @@ As expected, the trend for this is the higher the generosity, higher the happine
 ```{r}
 country_df%>%
   ggplot(mapping = aes(x = Corruption, y = positive_affect)) + 
-  geom_smooth(size = 1, se = FALSE)
+  geom_smooth(size = 1, se = FALSE) +
+  ggtitle("Happiness vs Government Corruption")
+
 ```
 
 The trend appears the higher the corruption, lower the happiness rating.
+What's interesting is that a little corruption appears to not impact people's happiness however when over 70% of the population sees the government as corrupt, there appears to be a strong, negative, linear relationship between corruption and happiness.
 
 #Hypothesis Testing:
 
-Let's take another look at the evolution of Happiness for the top 10 most powerful countries and see if we can fit a linear regression model to test if there is a relationship between year and happiness
+Let's take another look at the evolution of Happiness for the top 10 most powerful countries and see if we can fit a linear regression machine learning model to test if there is a relationship between year and happiness
 
 ```{r}
 country_df %>%
   ggplot(mapping = aes(x = Year, y = positive_affect, group_by(Year), color = Country)) + 
-  geom_smooth(size = 1, se = FALSE)
+  geom_smooth(size = 1, se = FALSE) +
+  ggtitle("Evolution of Happiness for the top 10 most powerful countries")
 ```
 
 Since we can see in the plot that each Country has a different trend, we will include an interaction term for Country and Year.
@@ -198,6 +215,7 @@ library(ISLR)
 library(tidyverse)
 library(broom)
 
+#Interaction term between year and country
 mdl <- lm(positive_affect~Year+Country+Country:Year, data=country_df)
 
 summary(mdl)
@@ -209,7 +227,7 @@ mdl_stats
 ```
 
 
-Now for each country we can look at their P values to see if we reject the null hypothesis of no relationship between year and Happiness.
+Now for each country we can look at their P values to see if we reject the null hypothesis of NO RELATIONSHIP between year and Happiness.
 
 We reject the nul hypothesis if our p value is less than $\alpha = 0.05$
 
@@ -235,9 +253,11 @@ United States: p = 0.0235877448 $\lt$ 0.05 so we reject
 
 #Conclusion
 
+From the linear regression model we can identify which countries have a trend regarding their happiness rating. 
+Germany, Israel, Japan, United Kingdom, and United States are decreasing.
 
 
-For the Countries that do show a correlation, we calculate an estimate for happiness changes per year
+For the Countries that do show a correlation, we can use out model to calculate an estimate for happiness changes per year
 
 
 ```{r}
