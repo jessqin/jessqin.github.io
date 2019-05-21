@@ -106,7 +106,9 @@ Looking at the evolution of happiness for al countries in the dataset:
 country_df %>%
   ggplot(mapping = aes(x = Year, y = positive_affect, group_by(Year))) + 
   geom_smooth(size = 1, se = FALSE) +
-  ylim(0.68,0.78)
+  ylim(0.68,0.78) +
+  ggtitle("Evolution of Global Happiness")
+
 ```
 
 Overall, there is no general trend for global happiness and year, this is probably because while some countries are increasing in happiness rating, others are decrease.
@@ -116,7 +118,9 @@ Here I plot Positive Affect vs Years to see if there is a trend in the evolution
 ```{r}
 country_df %>%
   ggplot(mapping = aes(x = Year, y = positive_affect, group_by(Year), color = Country)) + 
-  geom_smooth(size = 1, se = FALSE)
+  geom_smooth(size = 1, se = FALSE) +
+    ggtitle("Evolution of Happiness top 10 most powerful countries")
+
 ```
 
 
@@ -128,7 +132,9 @@ Developed Countries:
 country_df %>%
   filter(Country == "France" | Country == "Germany" | Country == "Japan" | Country == "South Korea" | Country == "United Kingdom" | Country == "United States" ) %>%
   ggplot(mapping = aes(x = Year, y = positive_affect, group_by(Year), color = Country)) + 
-  geom_smooth(size = 1, se = FALSE)
+  geom_smooth(size = 1, se = FALSE) +
+    ggtitle("Evolution of Happiness top 10 most powerful countries(Developed)")
+
 
 ```
 
@@ -139,7 +145,8 @@ Developing Countries:
 country_df %>%
   filter(Country == "China" | Country == "Israel" | Country == "Russia" | Country == "Saudi Arabia" ) %>%
   ggplot(mapping = aes(x = Year, y = positive_affect, group_by(Year), color = Country)) + 
-  geom_smooth(size = 1, se = FALSE)
+  geom_smooth(size = 1, se = FALSE) +
+  ggtitle("Evolution of Happiness top 10 most powerful countries(Developing)")
 
 ```
 
