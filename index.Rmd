@@ -7,11 +7,21 @@ output:
 
 #Gathering Data
 
+#The World Happiness Report:
+
 The data is from the World Happiness Report which consists of a Positive Affect attribute (which represents happiness, laughter, and enjoyment), a Negative Affect attribute (which represents worry, sadness, and anger) as well as various other attributes relevant to the country's government and social aspects throughout various years.
 
 I chose this dataset because although each person's happiness is dependent on their own situation, I wanted to see if there was anything that impacted the countries happiness as a whole.
 
-_Attributes:_
+A more detailed report of how the data was gathered as well as various figures can be found in Chapter two of the World Happiness Report found here:
+https://worldhappiness.report/ed/2019/changing-world-happiness/
+
+In Chapter two they take a look at how people of different countries view their own government and goes into farther analysis of various economic and political occurrences that may have strained the daily lives of their citizens.
+
+This kind of knowledge is important because if we can figure out which environmental factors impact a person's happiness, it helps us take steps in the right direction for a more successful future.
+
+
+#_Attributes:_
 
 Country
 
@@ -30,7 +40,7 @@ Positive Affect: Average of binary answers to "Did you experience a lot of happi
 Negative Affect: Average of binary answers to "Did you experience a lot of sadness today?" and "Did you experience a lot of these feelings yesterday?"
 
 
-```{r}
+```{r, message=F, warning=F}
 library(tidyverse)
 
 df <- read_csv("happiness.csv")
@@ -45,6 +55,21 @@ select_df
 
 ```
 
+#Ranking of Happiest Countries
+
+To Rank the Countries by happiness, I group by the country and summarize the data by creating a column that represents the average Positive Affect for each country. I the arrange them in descending order by their average Positive Affect.
+
+```{r, message=F, warning=F}
+
+select_df %>%
+  select(Country, positive_affect) %>%
+  group_by(Country) %>%
+  summarise(mean_happines = mean(positive_affect))%>%
+  arrange(desc(mean_happines))
+
+```
+
+Some intersting things to note is that the types of countries featured in the top 10 happiest countries are very different from eachother and greatly vary in terms of GDP, which may suggest that the income of the country does not play a big role in the citizen's happiness. In the rest of this tutorial we will look for trends of what other factors may impact one's happiness. 
 
 #Tidying Data
 
@@ -53,7 +78,7 @@ There's a lot of missing data in this dataset for various reasons. There are a h
 For some of the NA values, I replace them with the mean of the rest of the attribute values for that country. For countries that are missing all of their attributes for that column, I set the value to 0.5.
 
 
-```{r}
+```{r, message=F, warning=F}
 
 #Replacing NA with mean in the Freedom Column
 select_df <- select_df %>%
@@ -87,9 +112,11 @@ select_df
 
 #Top 10 most powerful countries
 
-According to https://www.usnews.com/news/best-countries/power-rankings 
+According to https://www.usnews.com/news/best-countries/power-rankings
 
-```{r}
+Here I am filtering the tidied datast to just show the Countries listd as US News' most powerful countries.
+
+```{r, message=F, warning=F}
 country_df <- select_df %>%
   filter(Year >= 2010) %>%
   filter( Country == "United States" | Country == "Russia" | Country == "China" | Country == "Germany" | Country == "United Kingdom" | Country == "France" | Country == "Japan" | Country == "Israel" | Country == "Saudi Arabia" | Country == "South Korea")
@@ -100,9 +127,13 @@ country_df
 
 #Looking for Trends
 
-Looking at the evolution of happiness for al countries in the dataset:
+In the plots below, I am plotting a line graph for the average Positive Affect value for all countries per year
 
-```{r}
+More about the geom_smooth function: https://ggplot2.tidyverse.org/reference/geom_smooth.html 
+
+Looking at the evolution of happiness for all countries in the dataset:
+
+```{r, message=F, warning=F}
 country_df %>%
   ggplot(mapping = aes(x = Year, y = positive_affect, group_by(Year))) + 
   geom_smooth(size = 1, se = FALSE) +
@@ -115,7 +146,7 @@ Overall, there is no general trend for global happiness and year, this is probab
 
 Here I plot Positive Affect vs Years to see if there is a trend in the evolution of happiness for the top 10 most powerful countries:
 
-```{r}
+```{r, message=F, warning=F}
 country_df %>%
   ggplot(mapping = aes(x = Year, y = positive_affect, group_by(Year), color = Country)) + 
   geom_smooth(size = 1, se = FALSE) +
@@ -123,12 +154,14 @@ country_df %>%
 
 ```
 
+To show the different countries, I add a color parameter to my aes function. What this does is that it groups the values by Country and plots it, drawing a different color line for each grouping.
 
-There appears to be no common trend for the 10 most powerful countries, a lot of the very developed countries such as Germany, Japan, South Korea, and the United States have slighlty declined throughout the years. Its mainly the currently developing countries that experience an increase in happiness. 
+
+*Analysis*: There appears to be no common trend for the 10 most powerful countries, a lot of the very developed countries such as Germany, Japan, South Korea, and the United States have slighlty declined throughout the years. Its mainly the currently developing countries that experience an increase in happiness. 
 
 Developed Countries:
 
-```{r}
+```{r, message=F, warning=F}
 country_df %>%
   filter(Country == "France" | Country == "Germany" | Country == "Japan" | Country == "South Korea" | Country == "United Kingdom" | Country == "United States" ) %>%
   ggplot(mapping = aes(x = Year, y = positive_affect, group_by(Year), color = Country)) + 
@@ -140,8 +173,7 @@ country_df %>%
 
 Developing Countries:
 
-
-```{r}
+```{r, message=F, warning=F}
 country_df %>%
   filter(Country == "China" | Country == "Israel" | Country == "Russia" | Country == "Saudi Arabia" ) %>%
   ggplot(mapping = aes(x = Year, y = positive_affect, group_by(Year), color = Country)) + 
@@ -149,6 +181,24 @@ country_df %>%
   ggtitle("Evolution of Happiness top 10 most powerful countries(Developing)")
 
 ```
+
+#Variation of Happiness for the top 10 most powerful countries:
+
+By making a boxplot for each country we can compare the average happiness between these countries as well as the spread to see if there has been much change in happiness in the past 8 years.
+
+```{r, message=F, warning=F}
+country_df %>%
+  select(positive_affect, Country) %>%
+  
+  ggplot(mapping=aes(y=positive_affect, x=Country, group = Country)) +
+    geom_boxplot() +
+    ggtitle("Distribution of Happiness Across Top 10 Most Powerful Countries") 
+
+
+
+```
+
+Based on the figure above, we can conclude that Russia and the United Kingdom have the greatest variation in happiness.
 
 #Some Interesting trends to look at
 
@@ -158,7 +208,7 @@ Below I plotted the positive affect vs life expectancy to see if a country's lif
 
 Top 10 powerful countries:
 
-```{r}
+```{r, message=F, warning=F}
 country_df %>%
   ggplot(mapping = aes(x = life_exp, y = positive_affect)) + 
   geom_smooth(size = 1, se = FALSE) +
@@ -167,7 +217,7 @@ country_df %>%
 
 All of the countries:
 
-```{r}
+```{r, message=F, warning=F}
 select_df %>%
   ggplot(mapping = aes(x = life_exp, y = positive_affect)) + 
   geom_smooth(size = 1, se = FALSE) +
@@ -181,7 +231,7 @@ The relationship between Happiness and Lfife Expectancy is the same for the top 
 
 #Positive Affect vs Generosity
 
-```{r}
+```{r, message=F, warning=F}
 select_df%>%
   ggplot(mapping = aes(x = Generosity, y = positive_affect)) + 
   geom_smooth(size = 1, se = FALSE) +
@@ -193,7 +243,7 @@ As expected, the trend for this is the higher the generosity, higher the happine
 
 #Positive Affect vs Corruption
 
-```{r}
+```{r, message=F, warning=F}
 country_df%>%
   ggplot(mapping = aes(x = Corruption, y = positive_affect)) + 
   geom_smooth(size = 1, se = FALSE) +
@@ -206,9 +256,18 @@ What's interesting is that a little corruption appears to not impact people's ha
 
 #Hypothesis Testing:
 
-Let's take another look at the evolution of Happiness for the top 10 most powerful countries and see if we can fit a linear regression machine learning model to test if there is a relationship between year and happiness
+Let's take another look at the evolution of Happiness for the top 10 most powerful countries and see if we can fit a linear regression machine learning model to test if there is a relationship between year and happiness.
 
-```{r}
+The goal of Linear regression is to analyze the relationship between a continuous numerical variable (Positive Affect) and another categorical or nmerical variable (Country). Here we use it for both hypothesis testing and predictions for for continous outcomes of interest.
+
+More information about Linear Regression can be found here: 
+
+http://www.hcbravo.org/IntroDataSci/bookdown-notes/linear-regression.html 
+
+http://www.stat.yale.edu/Courses/1997-98/101/linreg.htm
+
+
+```{r, message=F, warning=F}
 country_df %>%
   ggplot(mapping = aes(x = Year, y = positive_affect, group_by(Year), color = Country)) + 
   geom_smooth(size = 1, se = FALSE) +
@@ -217,7 +276,7 @@ country_df %>%
 
 Since we can see in the plot that each Country has a different trend, we will include an interaction term for Country and Year.
 
-```{r}
+```{r, message=F, warning=F}
 library(ISLR)
 library(tidyverse)
 library(broom)
@@ -267,7 +326,7 @@ Germany, Israel, Japan, United Kingdom, and United States are decreasing.
 For the Countries that do show a correlation, we can use out model to calculate an estimate for happiness changes per year
 
 
-```{r}
+```{r, message=F, warning=F}
 # Extract the coefficients
 mdl_m <- summary(mdl)$coefficients
 
