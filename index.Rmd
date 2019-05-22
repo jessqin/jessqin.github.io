@@ -299,23 +299,23 @@ We reject the nul hypothesis if our p value is less than $\alpha = 0.05$
 
 China: p = 0.0891710097 $\nless$ 0.05 So we DO NOT reject the hypothesis
 
-France: p = 0.0812782971 $\nless$ 0.05 So we DO NOT reject the hypothesis
+France: p = 0.0804746462 $\nless$ 0.05 So we DO NOT reject the hypothesis
 
-Germany: p = 0.0123077267 $\lt$ 0.05 so we reject
+Germany: p = 0.0121195373 $\lt$ 0.05 so we reject
 
-Israel: p = 0.0134298160 $\lt$ 0.05 so we reject
+Israel: p = 0.0128470925 $\lt$ 0.05 so we reject
 
-Japan: p = 0.0003156129 $\lt$ 0.05 so we reject
+Japan: p = 0.0003088391 $\lt$ 0.05 so we reject
 
-Russia: p = 0.1679674502 $\nless$ 0.05 so we DO NOT reject
+Russia: p = 0.1738246709 $\nless$ 0.05 so we DO NOT reject
 
-Saudia Arabia: p = 0.1241861861 $\nless$ 0.05 so we DO NOT reject
+Saudia Arabia: p = 0.1266250673 $\nless$ 0.05 so we DO NOT reject
 
-South Korea: p = 0.0981772404 $\nless$ 0.05 so we DO NOT reject
+South Korea: p = 0.0945884900 $\nless$ 0.05 so we DO NOT reject
 
-United Kingdom: p = 0.0002117193 $\lt$ 0.05 so we reject
+United Kingdom: p = 0.0002101849 $\lt$ 0.05 so we reject
 
-United States: p = 0.0235877448 $\lt$ 0.05 so we reject
+United States: p = 0.0236106350 $\lt$ 0.05 so we reject
 
 #Conclusion
 
